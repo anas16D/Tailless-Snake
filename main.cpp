@@ -10,7 +10,7 @@
 bool GameOver = false;
 int width = 50, height = 30;
 int PosX = width/2, PosY = height/2;
-char input1, input2;
+char input1, input2;					// arrow keys returns two ascii values
 enum Direction {STOP, UP, RIGHT, DOWN, LEFT};
 Direction dir;
 unsigned int score = 0;
@@ -18,10 +18,10 @@ int FoodX = rand()%(width-1)+1, FoodY = rand()%(height-1)+1;
 
 
 
-void Build();
-void Input();
-void Result();
-void Move();
+void Build();					// to build the walls and initial placement
+void Input();					// to take input from user
+void Result();					// update score after each move
+void Move();					// to move the snake according to input
 
 
 
@@ -31,13 +31,7 @@ int main(int argc, char** argv)
 	srand(time(NULL));
 	
 	Build();
-	
-	while(!GameOver)
-	{
-		Result();
-		Input();
-		Move();
-	}	
+	Input();	
 	
 	
 	return 0;
@@ -47,7 +41,7 @@ void Build()
 {
 
 	int i, j;
-	for(i = 0; i<=height; i++)
+	for(i = 0; i<=height; i++)				// building the initial setup
 	{
 		for(j =0; j<=width; j++)
 		{
@@ -60,9 +54,9 @@ void Build()
    			else if(i == height )
 			   std::cout<<"_"; 
 			else if(i == PosY && j == PosX)
-				 std::cout<<static_cast<char>(153); 
+				 std::cout<<static_cast<char>(153); 		// placing head of snake
 			else if(i == FoodY && j == FoodX)
-				 std::cout<<static_cast<char>(220);  
+				 std::cout<<static_cast<char>(220);  		// placing food
    			else
 			   std::cout<<" ";		
 			   
@@ -77,7 +71,7 @@ void Build()
 
 void Input()
 {
-	input1 = getch();
+	input1 = getch();			// arrow keys return two values 
 	input2= getch();
 	
 
@@ -107,20 +101,40 @@ void Input()
 					Input();
 					break;
 			}
+			
+			while(first == -32 && !GameOver)
+			{
+			
+				
+				
+				if(_kbhit())		// check if key is pressed
+				{
+ 			        Input();
+ 			        break;
+				}
+				
+				Move();
+				Result();
+				
+				Sleep(200);					// sleep for 0.2 seconds or 200 miliseconds
+				
+			}
 		
 			
 	}
 	else
 	{
+		fflush(stdin);
 		Input();
 	}
 	
 }
 
-void Move()
+void Move()							// moving the snake according to input
 {
 	int i, j;
 	
+	/* below code puts the cursor at PosX, PosY */
 		
 		HANDLE hStdout;
 		COORD destCoord;
@@ -129,7 +143,7 @@ void Move()
 		destCoord.Y = PosY;
 		SetConsoleCursorPosition(hStdout,destCoord);
 		
-		std::cout<<" \b";
+		std::cout<<" \b";				// a space to remove the previous snake and a backspace to put cursor back at PosX, PosY
 		
 		int PrevX = PosX;
 		int PrevY = PosY;
@@ -148,9 +162,7 @@ void Move()
 			case LEFT:
 				PosX--;
 				break;
-			//case UP:
-				//PosX++;
-				//break;
+		
 		}
 		
 		
@@ -167,6 +179,8 @@ void Move()
 
 void Result()
 {
+	/* below code puts the cursor at the place to prit/update score*/
+	
 	HANDLE hStdout;
 	COORD destCoord;
 	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -190,9 +204,9 @@ void Result()
 		FoodX = rand()%(width-1)+1;
 	 	FoodY = rand()%(height-1)+1;
 	 	
-		destCoord.X = FoodX;
+		destCoord.X = FoodX;				
 		destCoord.Y = FoodY;
-		SetConsoleCursorPosition(hStdout,destCoord);
+		SetConsoleCursorPosition(hStdout,destCoord);		// putting cursor at randm place to place new food
 		
 		std::cout<<static_cast<char>(220);  
 		
